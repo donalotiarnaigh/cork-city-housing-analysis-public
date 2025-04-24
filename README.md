@@ -70,8 +70,8 @@ This application provides an interactive visualization and analysis of property 
 
 1. **Clone the repository**
    ```
-   git clone [repository URL]
-   cd Cork_City_Property_Analysis
+   git clone https://github.com/donalotiarnaigh/cork-city-housing-analysis-public.git
+   cd cork-city-housing-analysis-public
    ```
 
 2. **Install required R packages**
