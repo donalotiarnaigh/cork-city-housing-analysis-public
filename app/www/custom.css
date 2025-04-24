@@ -1,0 +1,109 @@
+/* Custom styling for Cork City Property Analysis app */
+
+/* Sidebar styling */
+.skin-blue .main-sidebar {
+    background-color: #f8f8f8;
+}
+
+.skin-blue .sidebar a {
+    color: #0033A0;
+}
+
+.skin-blue .sidebar-menu>li.active>a, 
+.skin-blue .sidebar-menu>li:hover>a {
+    background-color: #0033A0;
+    color: #fff;
+}
+
+/* Main content styling */
+.content-wrapper, .right-side {
+    background-color: #f5f5f5;
+}
+
+/* Box styling */
+.box {
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+}
+
+.box.box-primary {
+    border-top-color: #0033A0;
+}
+
+/* Value box tweaks */
+.small-box {
+    border-radius: 3px;
+}
+
+/* Button styling */
+.btn-primary {
+    background-color: #0033A0;
+    border-color: #002D8D;
+}
+
+.btn-primary:hover, 
+.btn-primary:active, 
+.btn-primary:focus {
+    background-color: #002D8D;
+    border-color: #00277A;
+}
+
+/* Filter section */
+.filter-section {
+    padding: 5px;
+    margin-bottom: 10px;
+    color: #666;
+}
+
+/* Info section */
+.info-section {
+    padding: 5px;
+    color: #666;
+}
+
+/* Leaflet map customization */
+.leaflet-container {
+    background: #e6e6e6;
+    border-radius: 4px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+}
+
+.leaflet-popup-content {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.leaflet-popup-content h4 {
+    color: #0033A0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    margin-top: 0;
+}
+
+/* Cork City color scheme accents */
+.accent-blue {
+    color: #0033A0;
+}
+
+.accent-green {
+    color: #009B48;
+}
+
+.accent-red {
+    color: #CE1126;
+}
+
+/* Input labels */
+.control-label {
+    color: #333;
+    font-weight: 600;
+}
+
+/* Slider labels and values */
+.irs-min, .irs-max, .irs-single, .irs-from, .irs-to {
+    color: #333 !important;
+}
+
+/* Radio buttons and select inputs */
+.radio label, .checkbox label, .selectize-input {
+    color: #333;
+} 
