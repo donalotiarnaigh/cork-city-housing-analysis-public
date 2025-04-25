@@ -1,4 +1,3 @@
-
 library(shiny)
 library(shinydashboard)
 library(leaflet)
@@ -12,37 +11,42 @@ library(plotly)
 library(DT)
 library(htmlwidgets)
 library(lubridate)
+library(here)
 
-# Load data
-# Property Price Register data
-ppr_data <- st_read("../data/processed/final/ppr_corkCity_with_dates.gpkg", quiet = TRUE)
-
-# Airbnb listings data
-airbnb_data <- st_read("../data/processed/final/airbnb_corkCity_with_dates.gpkg", quiet = TRUE)
-
-# Cork City boundary
-cork_boundary <- st_read("../data/boundaries/cork_city_boundary.gpkg", quiet = TRUE)
-
-# Transform all data to WGS84 for Leaflet compatibility
-if (st_crs(ppr_data)$epsg != 4326) {
+# Load data with proper error handling
+tryCatch({
+  ppr_data <- st_read(here(here("data/processed/final/ppr_corkCity_with_dates.gpkg")), quiet = TRUE)
+  cat("Successfully loaded PPR data\n")
+  
+  airbnb_data <- st_read(here(here("data/processed/final/airbnb_corkCity_with_dates.gpkg")), quiet = TRUE)
+  cat("Successfully loaded Airbnb data\n")
+  
+  cork_boundary <- st_read(here(here("data/boundaries/cork_city_boundary.gpkg")), quiet = TRUE)
+  cat("Successfully loaded Cork boundary data\n")
+  
+  # Transform to WGS84 for web mapping
   ppr_data <- st_transform(ppr_data, 4326)
-}
-
-if (st_crs(airbnb_data)$epsg != 4326) {
   airbnb_data <- st_transform(airbnb_data, 4326)
-}
-
-if (st_crs(cork_boundary)$epsg != 4326) {
   cork_boundary <- st_transform(cork_boundary, 4326)
-}
+  
+  # Calculate price ranges for UI sliders
+  ppr_min_price <- floor(min(ppr_data$price, na.rm = TRUE) / 10000) * 10000
+  ppr_max_price <- ceiling(max(ppr_data$price, na.rm = TRUE) / 100000) * 100000
+  
+  airbnb_min_price <- floor(min(airbnb_data$price, na.rm = TRUE) / 10) * 10
+  airbnb_max_price <- ceiling(max(airbnb_data$price, na.rm = TRUE) / 50) * 50
+  
+  # Get property types
+  property_types <- c("All", sort(unique(ppr_data$property_description)))
+  room_types <- c("All", sort(unique(airbnb_data$room_type)))
+  
+}, error = function(e) {
+  cat("Error loading data:", e$message, "\n")
+  stop("Failed to load required data files")
+})
 
 # Calculate price ranges for sliders
-ppr_min_price <- floor(min(ppr_data$price, na.rm = TRUE) / 10000) * 10000
-ppr_max_price <- ceiling(max(ppr_data$price, na.rm = TRUE) / 100000) * 100000
 ppr_median_price <- median(ppr_data$price, na.rm = TRUE)
-
-airbnb_min_price <- floor(min(airbnb_data$price, na.rm = TRUE) / 10) * 10
-airbnb_max_price <- ceiling(max(airbnb_data$price, na.rm = TRUE) / 50) * 50
 airbnb_median_price <- median(airbnb_data$price, na.rm = TRUE)
 
 # Define UI with shinydashboard
@@ -76,7 +80,7 @@ ui <- dashboardPage(
                    value = c(ppr_min_price, ppr_max_price),
                    step = 10000),
         selectInput("propertyType", "Property Type:",
-                   choices = c("All", sort(unique(ppr_data$property_description))),
+                   choices = property_types,
                    selected = "All")
       ),
       
@@ -89,7 +93,7 @@ ui <- dashboardPage(
                    value = c(airbnb_min_price, airbnb_max_price),
                    step = 10),
         selectInput("roomType", "Room Type:",
-                   choices = c("All", sort(unique(airbnb_data$room_type))),
+                   choices = room_types,
                    selected = "All"),
         sliderInput("minReviews", "Minimum Reviews:",
                    min = 0, max = max(airbnb_data$number_of_reviews, na.rm = TRUE),

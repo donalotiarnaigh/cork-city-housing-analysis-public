@@ -11,37 +11,57 @@ This application provides an interactive visualization and analysis of property 
 
 ## Project Structure
 
-- `data/` - Contains raw and processed datasets
-  - `raw/` - Original unmodified data
-  - `processed/` - Cleaned and transformed data
-  - `processed/final/` - Final datasets ready for analysis and used by the app
-  - `boundaries/` - Geographic boundary files for Cork City
-- `R/` - R scripts for data cleaning, analysis, and visualization
-  - `app/` - Shiny application files
-- `output/` - Generated visualizations and analysis results
-  - `maps/` - Geographic visualizations
-  - `statistics/` - Statistical analysis outputs
-  - `visualizations/` - Charts and diagrams
-  - `price_maps/` - Price-focused spatial visualizations
-  - `logs/` - Processing logs
+The repository is organized as follows:
+
+```
+cork-city-property-analysis/
+├── app/                    # Shiny application code
+├── scripts/                # Data processing scripts
+│   ├── 01_data_cleaning/   # Data cleaning and preparation
+│   ├── 02_geocoding/       # Geocoding property addresses
+│   ├── 03_analysis/        # Analysis of property data
+│   └── 04_visualization/   # Visualization scripts
+├── data/                   # Data files
+│   ├── raw/                # Original unmodified data
+│   ├── processed/          # Cleaned and transformed data
+│   ├── boundaries/         # Geographic boundary files
+│   └── samples/            # Sample data for testing
+├── docs/                   # Documentation
+│   ├── technical/          # Technical documentation
+│   ├── user_guides/        # User guides and manuals
+│   └── report/             # Final reports and findings
+└── output/                 # Generated outputs
+    ├── figures/            # Visualizations and maps
+    ├── statistics/         # Statistical results
+    └── logs/               # Processing logs
+```
 
 ## Key Scripts
 
-### Data Processing Scripts
+### Data Cleaning (scripts/01_data_cleaning/)
 
-- **01_ppr_data_cleaning.R**: Cleans and standardizes Property Price Register data
-- **02_airbnb_data_cleaning.R**: Cleans and standardizes Airbnb listings data
-- **03_missing_data_analysis.R**: Analyzes patterns in missing data for datasets
-- **04_create_complete_dataset.R**: Combines cleaned data for further processing
-- **05_ppr_geocoding.R** to **11_standardize_property_types.R**: Handles geocoding, verification, and standardization of property data
+- **ppr_data_cleaning.R**: Cleans and standardizes Property Price Register data
+- **airbnb_data_cleaning.R**: Cleans and standardizes Airbnb listings data
+- **missing_data_analysis.R**: Analyzes patterns in missing data for datasets
+- **create_complete_dataset.R**: Combines cleaned data for further processing
 
-### Analysis Scripts
+### Geocoding (scripts/02_geocoding/)
 
-- **12_geographic_analysis.R**: Analyzes spatial distribution of properties and Airbnb listings
-- **13_price_statistics.R**: Generates statistical summaries of price data
-- **14_restore_airbnb_price.R**: Handles issues with Airbnb price data
-- **15_spatial_price_analysis.R**: Analyzes spatial distribution of prices
-- **16_restore_date_columns.R**: Ensures date columns are correctly formatted
+- **ppr_geocoding.R**: Prepares data for geocoding
+- **prepare_ppr_for_arcgis.R**: Prepares data for ArcGIS geocoding
+- **import_geocoded_ppr.R**: Imports geocoded results
+- **clean_geocoded_ppr.R**: Cleans up geocoded data
+- **verify_geocoded_data.R**: Verifies geocoding accuracy
+- **fix_geocoded_data.R**: Fixes geocoding issues
+
+### Analysis (scripts/03_analysis/)
+
+- **standardize_property_types.R**: Standardizes property type categories
+- **geographic_analysis.R**: Analyzes spatial distribution of properties and Airbnb listings
+- **price_statistics.R**: Generates statistical summaries of price data
+- **restore_airbnb_price.R**: Handles issues with Airbnb price data
+- **spatial_price_analysis.R**: Analyzes spatial distribution of prices
+- **restore_date_columns.R**: Ensures date columns are correctly formatted
 
 ### Application
 
@@ -51,7 +71,7 @@ This application provides an interactive visualization and analysis of property 
 
 ### R Packages
 
-- **Data Processing**: dplyr, tidyr, readr, stringr, lubridate
+- **Core**: dplyr, tidyr, readr, stringr, lubridate, here
 - **Spatial Analysis**: sf, spatstat, spdep, leaflet, mapview, tmap, stars
 - **Visualization**: ggplot2, plotly, viridis, RColorBrewer
 - **Application**: shiny, shinydashboard, shinyjs, leaflet
@@ -70,27 +90,45 @@ This application provides an interactive visualization and analysis of property 
    cd cork-city-housing-analysis-public
    ```
 
-2. **Install required R packages**
+2. **Initialize the project**
+   ```R
+   Rscript scripts/setup_project.R
+   ```
+
+3. **Install required R packages**
    ```R
    install.packages(c("shiny", "shinydashboard", "leaflet", "sf", "dplyr", 
                       "ggplot2", "plotly", "viridis", "tidyr", "lubridate",
-                      "tmap", "spatstat", "spdep", "raster", "stars"))
+                      "tmap", "spatstat", "spdep", "raster", "stars", "here"))
    ```
 
-3. **Download required data (if not included)**
+4. **Download required data (if not included)**
    - Property Price Register: https://www.propertypriceregister.ie/website/npsra/pprweb.nsf/PPRDownloads?OpenForm
    - Airbnb listings: https://insideairbnb.com/get-the-data/
-   - Place downloaded data in the `data/raw/` directory
+   - Place raw data in the appropriate directories:
+     - PPR data: `data/raw/property_sales/`
+     - Airbnb data: `data/raw/airbnb/`
 
-4. **Prepare the data**
-   Run the data processing scripts in sequential order (01 to 16)
-   ```
-   Rscript R/01_ppr_data_cleaning.R
-   Rscript R/02_airbnb_data_cleaning.R
-   # Continue with remaining scripts
+5. **Check for required data files**
+   ```R
+   Rscript scripts/check_data_files.R
    ```
 
-5. **Launch the Shiny app**
+6. **Process the data**
+   Run the data processing scripts in order:
+   ```
+   # Data cleaning
+   Rscript scripts/01_data_cleaning/ppr_data_cleaning.R
+   Rscript scripts/01_data_cleaning/airbnb_data_cleaning.R
+   Rscript scripts/01_data_cleaning/missing_data_analysis.R
+   Rscript scripts/01_data_cleaning/create_complete_dataset.R
+   
+   # Geocoding
+   Rscript scripts/02_geocoding/ppr_geocoding.R
+   # ... and so on
+   ```
+
+7. **Launch the Shiny app**
    ```
    Rscript -e "shiny::runApp('app/app.R')"
    ```
